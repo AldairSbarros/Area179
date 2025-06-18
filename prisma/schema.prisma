@@ -1,0 +1,61 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // Altere para "postgresql" ou "mysql" se necessário
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id            Int      @id @default(autoincrement())
+  nome          String
+  email         String   @unique
+  senha         String
+  perfil        String
+  congregacaoId Int?
+  Congregacao   Congregacao? @relation(fields: [congregacaoId], references: [id])
+}
+
+model Congregacao {
+  id      Int      @id @default(autoincrement())
+  nome    String
+  membros Member[]
+  usuarios Usuario[]
+  offerings Offering[]
+  despesas Despesa[]
+}
+
+model Member {
+  id            Int      @id @default(autoincrement())
+  nome          String
+  congregacaoId Int
+  Congregacao   Congregacao @relation(fields: [congregacaoId], references: [id])
+  offerings     Offering[]
+}
+
+model Offering {
+  id            Int      @id @default(autoincrement())
+  memberId      Int
+  congregacaoId Int
+  type          String
+  value         Float
+  date          DateTime
+  service       String
+  receiptPhoto  String?
+  Member        Member      @relation(fields: [memberId], references: [id])
+  Congregacao   Congregacao @relation(fields: [congregacaoId], references: [id])
+}
+
+model Despesa {
+  id            Int      @id @default(autoincrement())
+  descricao     String
+  valor         Float
+  data          DateTime
+  categoria     String?
+  observacao    String?
+  congregacaoId Int
+  Congregacao   Congregacao @relation(fields: [congregacaoId], references: [id])
+  // Adicione outros campos conforme sua necessidade
+}
