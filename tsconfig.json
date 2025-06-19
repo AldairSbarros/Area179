@@ -2,6 +2,8 @@
   "compilerOptions": {
     "module": "CommonJS",          // 👈 ESSENCIAL
     "target": "ES2020",
+    "typeRoots": ["./node_modules/@types"],
+
     "moduleResolution": "Node",
     "rootDir": "src",
     "outDir": "dist",
