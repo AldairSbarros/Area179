@@ -34,6 +34,9 @@ model Congregacao {
 model Member {
   id            Int      @id @default(autoincrement())
   nome          String
+  telefone      String?
+  email         String?
+  senha         String?
   congregacaoId Int
   Congregacao   Congregacao @relation(fields: [congregacaoId], references: [id])
   offerings     Offering[]

@@ -3,20 +3,33 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// Cria um novo membro
+// Cria um novo membro usando o nome da congregação
 export const create: RequestHandler = async (req, res) => {
   try {
-    const { nome, congregacaoId } = req.body;
+    const { nome, congregacaoNome, telefone, email, senha } = req.body;
 
-    if (!nome || !congregacaoId) {
-      res.status(400).json({ error: 'Nome e congregacaoId são obrigatórios.' });
+    if (!nome || !congregacaoNome) {
+      res.status(400).json({ error: 'Nome e congregacaoNome são obrigatórios.' });
+      return;
+    }
+
+    // Busca a congregação pelo nome
+    const congregacao = await prisma.congregacao.findFirst({
+      where: { nome: congregacaoNome }
+    });
+
+    if (!congregacao) {
+      res.status(404).json({ error: 'Congregação não encontrada.' });
       return;
     }
 
     const member = await prisma.member.create({
       data: {
         nome,
-        congregacaoId: Number(congregacaoId)
+        congregacaoId: congregacao.id,
+        telefone,
+        email,
+        senha
       }
     });
 
