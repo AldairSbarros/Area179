@@ -19,12 +19,15 @@ model Usuario {
 }
 
 model Congregacao {
-  id      Int      @id @default(autoincrement())
-  nome    String
-  membros Member[]
-  usuarios Usuario[]
-  offerings Offering[]
-  despesas Despesa[]
+  id         Int         @id @default(autoincrement())
+  nome       String
+  membros    Member[]
+  usuarios   Usuario[]
+  offerings  Offering[]
+  despesas   Despesa[]
+  receitas   Receita[]   // ✅ Adicionado agora
+  investimentos Investimento[]  // 👈 aqui está o novo campo
+
 }
 
 model Member {
@@ -49,13 +52,37 @@ model Offering {
 }
 
 model Despesa {
-  id            Int      @id @default(autoincrement())
-  descricao     String
-  valor         Float
-  data          DateTime
-  categoria     String?
-  observacao    String?
-  congregacaoId Int
-  Congregacao   Congregacao @relation(fields: [congregacaoId], references: [id])
-  // Adicione outros campos conforme sua necessidade
+  id              Int          @id @default(autoincrement())
+  descricao       String
+  valor           Float
+  data            DateTime
+  categoria       String?
+  observacao      String?
+  notaFiscalFoto  String?
+  codigoManual    String?      // ✅ Adicionado aqui
+  congregacaoId   Int
+  Congregacao     Congregacao  @relation(fields: [congregacaoId], references: [id])
+}
+
+model Receita {
+  id             Int      @id @default(autoincrement())
+  descricao      String
+  valor          Float
+  data           DateTime
+  categoria      String?
+  observacao     String?
+  codigoManual   String?
+  congregacaoId  Int
+  Congregacao    Congregacao @relation(fields: [congregacaoId], references: [id])
+}
+
+model Investimento {
+  id             Int          @id @default(autoincrement())
+  descricao      String
+  valor          Float
+  data           DateTime
+  categoria      String?
+  codigoManual   String?
+  congregacaoId  Int
+  Congregacao    Congregacao @relation(fields: [congregacaoId], references: [id])
 }

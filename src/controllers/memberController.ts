@@ -1,63 +1,51 @@
-import { Request, Response } from 'express';
+import { RequestHandler } from 'express';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const create = async (req: Request, res: Response) => {
+// Cria um novo membro
+export const create: RequestHandler = async (req, res) => {
   try {
     const { nome, congregacaoId } = req.body;
+
+    if (!nome || !congregacaoId) {
+      res.status(400).json({ error: 'Nome e congregacaoId são obrigatórios.' });
+      return;
+    }
+
     const member = await prisma.member.create({
-      data: { nome, congregacaoId }
+      data: {
+        nome,
+        congregacaoId: Number(congregacaoId)
+      }
     });
+
     res.status(201).json(member);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 };
 
-export const list = async (req: Request, res: Response) => {
+// Lista membros, opcionalmente filtrando por congregacaoId
+export const list: RequestHandler = async (req, res) => {
   try {
-    const { congregacaoId, mes, ano } = req.query;
-    if (!congregacaoId) {
-      return res.status(400).json({ error: 'Informe o congregacaoId' });
+    const { congregacaoId } = req.query;
+
+    const where: any = {};
+    if (congregacaoId) {
+      where.congregacaoId = Number(congregacaoId);
     }
 
-    const where: any = {
-      congregacaoId: Number(congregacaoId),
-      receiptPhoto: { not: null }
-    };
-
-    if (mes && ano) {
-      const inicio = new Date(Number(ano), Number(mes) - 1, 1);
-      const fim = new Date(Number(ano), Number(mes), 0, 23, 59, 59);
-      where.date = { gte: inicio, lte: fim };
-    }
-
-    const comprovantes = await prisma.offering.findMany({
+    const members = await prisma.member.findMany({
       where,
       select: {
         id: true,
-        memberId: true,
-        value: true,
-        date: true,
-        service: true,
-        receiptPhoto: true
+        nome: true,
+        congregacaoId: true
       }
     });
 
-    type Comprovante = {
-      id: number;
-      memberId: number;
-      value: number;
-      date: Date;
-      service: string;
-      receiptPhoto: string | null;
-    };
-
-    const result = comprovantes.map((c: Comprovante) => ({
-      ...c
-    }));
-    res.json(result);
+    res.json(members);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

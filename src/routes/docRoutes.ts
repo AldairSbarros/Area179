@@ -3,7 +3,6 @@ import fs from 'fs';
 import path from 'path';
 
 const router = Router();
-export default router;
 
 router.get('/', (_req: Request, res: Response) => {
   const docPath = path.resolve(__dirname, '../../DOCUMENTACAO.md');
@@ -13,4 +12,4 @@ router.get('/', (_req: Request, res: Response) => {
   });
 });
 
-module.exports = router;
+export default router;

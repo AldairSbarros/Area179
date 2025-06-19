@@ -4,10 +4,10 @@ import {
   list,
   updateReceiptPhoto,
   deleteReceiptPhoto,
-  
+  listReceipts,
 } from '../controllers/offeringController';
 import upload from '../middleware/upload';
-
+import auth from '../middleware/auth';
 
 const router = Router();
 
@@ -23,35 +23,16 @@ router.post('/upload-receipt', upload.single('receiptPhoto'), (req: Request, res
 });
 
 // Rotas protegidas
-router.post('/', authMiddleware(), create);
-router.get('/', authMiddleware(), list);
-router.patch('/:id/receipt-photo', authMiddleware(), updateReceiptPhoto);
-router.delete('/:id/receipt-photo', authMiddleware(), async (req, res, next) => {
+router.post('/', auth(), create);
+router.get('/', auth(), list);
+router.patch('/:id/receipt-photo', auth(), updateReceiptPhoto);
+router.delete('/:id/receipt-photo', auth(), async (req, res, next) => {
   try {
     await deleteReceiptPhoto(req, res);
   } catch (err) {
     next(err);
   }
 });
-router.get('/receipts', authMiddleware(), list);
+router.get('/receipts', auth(),list);
 
 export default router;
-
-function authMiddleware(): import("express-serve-static-core").RequestHandler {
-  return (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      res.status(401).json({ error: 'Unauthorized' });
-      return;
-    }
-    const token = authHeader.split(' ')[1];
-    // Here you would normally verify the token (e.g., using JWT)
-    // For demonstration, we'll just check if token exists
-    if (!token) {
-      res.status(401).json({ error: 'Invalid token' });
-      return;
-    }
-    // If token is valid, proceed
-    next();
-  };
-}
