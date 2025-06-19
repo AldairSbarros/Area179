@@ -16,6 +16,7 @@ model Usuario {
   perfil        String
   congregacaoId Int?
   Congregacao   Congregacao? @relation(fields: [congregacaoId], references: [id])
+  dizimos     Dizimo[]
 }
 
 model Congregacao {
@@ -86,4 +87,15 @@ model Investimento {
   codigoManual   String?
   congregacaoId  Int
   Congregacao    Congregacao @relation(fields: [congregacaoId], references: [id])
+}
+
+model Dizimo {
+  id           Int     @id @default(autoincrement())
+  usuarioId    Int
+  valor        Float
+  data         DateTime @default(now())
+  comprovante  String  // URL da imagem do comprovante
+  numeroRecibo String  // Número do recibo
+
+  usuario      Usuario @relation(fields: [usuarioId], references: [id])
 }

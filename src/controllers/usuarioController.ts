@@ -92,3 +92,59 @@ export const changePassword = async (req: Request, res: Response) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+export const getDizimos = async (req: Request, res: Response) => {
+  try {
+    // @ts-ignore
+    const userId = req.user.id;
+
+    const dizimos = await prisma.dizimo.findMany({
+      where: { usuarioId: userId },
+      select: { id: true, valor: true, data: true, comprovante: true }
+    });
+
+    res.json(dizimos);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const login = async (req: Request, res: Response) => {
+  try {
+    const { email, senha } = req.body;
+    const usuario = await prisma.usuario.findUnique({ where: { email } });
+
+    if (!usuario || !(await bcrypt.compare(senha, usuario.senha))) {
+      return res.status(401).json({ error: 'Credenciais inválidas' });
+    }
+
+    const dizimos = await prisma.dizimo.findMany({
+      where: { usuarioId: usuario.id },
+      select: { id: true, valor: true, data: true, comprovante: true }
+    });
+
+    res.json({ usuario, dizimos });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const uploadComprovante = async (req: Request, res: Response) => {
+  try {
+    const { dizimoId } = req.body;
+    const file = req.file; // Arquivo enviado
+
+    if (!file) return res.status(400).json({ error: 'Nenhum arquivo enviado' });
+
+    const imageUrl = `URL_DO_ARMAZENAMENTO/${file.filename}`; // Substitua pelo caminho real
+
+    await prisma.dizimo.update({
+      where: { id: Number(dizimoId) },
+      data: { comprovante: imageUrl }
+    });
+
+    res.json({ message: 'Comprovante enviado com sucesso', imageUrl });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+};
