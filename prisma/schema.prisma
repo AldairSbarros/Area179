@@ -39,16 +39,17 @@ model Member {
 }
 
 model Offering {
-  id            Int      @id @default(autoincrement())
-  memberId      Int
-  congregacaoId Int
-  type          String
-  value         Float
-  date          DateTime
-  service       String
-  receiptPhoto  String?
-  Member        Member      @relation(fields: [memberId], references: [id])
-  Congregacao   Congregacao @relation(fields: [congregacaoId], references: [id])
+  id             Int       @id @default(autoincrement())
+  type           String
+  value          Float
+  date           DateTime
+  service        String?
+  receiptPhoto   String?
+  numeroRecibo   String?   // ✅ Novo campo
+  congregacaoId  Int
+  memberId       Int
+  Congregacao    Congregacao @relation(fields: [congregacaoId], references: [id])
+  Member         Member      @relation(fields: [memberId], references: [id])
 }
 
 model Despesa {

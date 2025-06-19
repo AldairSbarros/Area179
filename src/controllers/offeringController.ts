@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 export const create = async (req: Request, res: Response) => {
   try {
-    const { memberId, congregacaoId, type, value, date, service, receiptPhoto } = req.body;
+    const { memberId, congregacaoId, type, value, date, service, receiptPhoto, numeroRecibo } = req.body;
     const offering = await prisma.offering.create({
       data: {
         memberId,
@@ -16,7 +16,8 @@ export const create = async (req: Request, res: Response) => {
         value,
         date: new Date(date),
         service,
-        receiptPhoto
+        receiptPhoto,
+        numeroRecibo
       }
     });
     res.status(201).json(offering);
