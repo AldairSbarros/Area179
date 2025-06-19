@@ -3,7 +3,7 @@
   "info": {
     "title": "API a179",
     "version": "1.0.0",
-    "description": "Documentação completa da API a179"
+    "description": "Documentação completa da API AREA179"
   },
   "paths": {
     "/usuarios": {
